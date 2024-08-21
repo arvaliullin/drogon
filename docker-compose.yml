@@ -1,0 +1,16 @@
+version: "3"
+
+services:
+  drogon-app:
+    build:
+      context: .
+      dockerfile: deployments/Dockerfile
+    command: go run drogon/examples/helloworld
+    ports:
+      - "8080:8080"
+    networks:
+      - drogon_network
+
+networks:
+  drogon_network:
+    driver: bridge
