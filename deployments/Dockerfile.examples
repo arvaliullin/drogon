@@ -1,0 +1,21 @@
+# Устанавливаем базовый образ Go
+FROM golang:1.23
+
+# Создаем рабочую директорию
+WORKDIR /app
+
+# Копируем go.mod и go.sum для установки зависимостей
+COPY go.mod go.sum ./
+
+# Устанавливаем зависимости
+RUN go mod download
+
+# Копируем остальные файлы проекта
+COPY . .
+
+# Сборка Go-приложения
+RUN go build drogon/examples/rabbitmq/consumer
+RUN go build drogon/examples/rabbitmq/producer
+
+EXPOSE 8080
+

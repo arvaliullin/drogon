@@ -1,13 +1,41 @@
-version: "3"
+version: "3.8"
 
 services:
-  drogon-app:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - drogon_network
+
+  producer:
     build:
       context: .
-      dockerfile: deployments/Dockerfile
-    command: go run drogon/examples/helloworld
-    ports:
-      - "8080:8080"
+      dockerfile: deployments/Dockerfile.examples
+    container_name: producer
+    depends_on:
+      - rabbitmq
+    environment:
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
+    command: ["/app/producer"]
+    networks:
+      - drogon_network
+
+  consumer:
+    build:
+      context: .
+      dockerfile: deployments/Dockerfile.examples
+    container_name: consumer
+    depends_on:
+      - rabbitmq
+    environment:
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
+    command: ["/app/consumer"]
     networks:
       - drogon_network
 
