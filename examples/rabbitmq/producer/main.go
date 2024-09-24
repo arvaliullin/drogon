@@ -16,6 +16,7 @@ func failOnError(err error, msg string) {
 }
 
 func main() {
+	time.Sleep(time.Second * 50)
 	rabbitmqURL := os.Getenv("RABBITMQ_URL")
 	conn, err := amqp.Dial(rabbitmqURL)
 	failOnError(err, "Failed to connect to RabbitMQ")
