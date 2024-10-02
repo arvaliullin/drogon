@@ -1,14 +1,15 @@
 # Устанавливаем базовый образ Go
-FROM golang:1.23
+FROM debian:bookworm-backports
+
+# Устанавливаем необходимые утилиты
+RUN apt update && apt install -y \
+    curl \
+    ca-certificates
+
+RUN apt install --yes golang golang-github-streadway-amqp-dev
 
 # Создаем рабочую директорию
 WORKDIR /app
-
-# Копируем go.mod и go.sum для установки зависимостей
-COPY go.mod go.sum ./
-
-# Устанавливаем зависимости
-RUN go mod download
 
 # Копируем остальные файлы проекта
 COPY . .
@@ -18,4 +19,3 @@ RUN go build drogon/examples/rabbitmq/consumer
 RUN go build drogon/examples/rabbitmq/producer
 
 EXPOSE 8080
-
