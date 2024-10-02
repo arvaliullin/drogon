@@ -1,0 +1,15 @@
+# Используем официальный образ RabbitMQ с базовой версией 3.9
+FROM rabbitmq:3.9
+
+# Опционально можно настроить переменные среды, например, для управления плагинами, конфигурацией и т.д.
+# ENV RABBITMQ_DEFAULT_USER=user
+# ENV RABBITMQ_DEFAULT_PASS=password
+
+# Опционально, если нужно включить и настроить плагины
+RUN rabbitmq-plugins enable --offline rabbitmq_management
+
+# Указываем, какие порты будут открыты в контейнере
+EXPOSE 5672 15672
+
+# Команда запуска RabbitMQ, не обязательно указывать, так как она уже определена в базовом образе
+CMD ["rabbitmq-server"]

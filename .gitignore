@@ -131,3 +131,5 @@ dist
 
 # IntelIj
 .idea/
+
+package-lock.json
