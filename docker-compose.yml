@@ -39,6 +39,17 @@ services:
     networks:
       - drogon_network
 
+  helloworld:
+    build:
+      context: .
+      dockerfile: deployments/Dockerfile
+    container_name: helloworld
+    command: ["bun", "run", "start"]
+    ports:
+      - "3000:3000"
+    networks:
+      - drogon_network
+
 networks:
   drogon_network:
     driver: bridge

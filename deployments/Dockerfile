@@ -11,3 +11,5 @@ RUN curl -fsSL https://bun.sh/install | bash
 WORKDIR /opt/src
 
 COPY . .
+
+RUN bun install
