@@ -23,11 +23,8 @@
 [Производственная, технологическая (проектно-технологическая) практика](doc/practice/practice.md)
 
 ```mermaid
-graph TD;
-    q0((q0))
-    q1((q1))
-    
-    q0 --&gt; |a| q1
-    q0 --&gt; |b| q0
-    q1 --&gt; |a| q0
-    q1 --&gt; |b| q1
+stateDiagram
+    [*] --> q0
+    q0 --> q1 : a
+    q1 --> q0 : b
+    q0 --> [*]
