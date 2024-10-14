@@ -133,3 +133,5 @@ dist
 .idea/
 
 package-lock.json
+
+bun.lockb
