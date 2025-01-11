@@ -93,7 +93,6 @@
 
 ```mermaid
 graph TD
-flowchart TD
     A["Производительность WebAssembly (WASM)"] --> B["Основные факторы производительности"]
     A --> C["Архитектура и работа WebAssembly"]
 
