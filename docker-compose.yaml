@@ -1,0 +1,18 @@
+services:
+  drogon:
+    build:
+      context: .
+      dockerfile: deployments/drogon.Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - POSTGRESQL_CONNECTION=postgresql://drogon_user:drogon_password@postgres:5432/drogon_db?sslmode=disable
+
+  postgres:
+    image: postgres:latest
+    environment:
+      - POSTGRES_DB=drogon_db
+      - POSTGRES_USER=drogon_user
+      - POSTGRES_PASSWORD=drogon_password
+    ports:
+      - "5432:5432"
