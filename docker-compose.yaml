@@ -6,7 +6,9 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - POSTGRESQL_CONNECTION=postgresql://drogon_user:drogon_password@postgres:5432/drogon_db?sslmode=disable
+      - DATABASE_CONNECTION=postgresql://drogon_user:drogon_password@postgres:5432/drogon_db?sslmode=disable
+    depends_on:
+      - postgres
 
   postgres:
     image: postgres:latest

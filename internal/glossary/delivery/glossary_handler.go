@@ -15,11 +15,12 @@ type GlossaryHandler struct {
 func NewGlossaryHandler(e *echo.Echo, uc *usecase.GlossaryUsecase) {
 	handler := &GlossaryHandler{UC: uc}
 
-	e.GET("/terms", handler.GetAll)
-	e.GET("/terms/:term", handler.GetTerm)
-	e.POST("/terms", handler.CreateTerm)
-	e.PUT("/terms/:term", handler.UpdateTerm)
-	e.DELETE("/terms/:term", handler.DeleteTerm)
+	e.GET("/api/terms", handler.GetAll)
+	e.GET("/api/terms/:term", handler.GetTerm)
+	e.POST("/api/terms", handler.CreateTerm)
+	e.PUT("/api/terms/:term", handler.UpdateTerm)
+	e.DELETE("/api/terms/:term", handler.DeleteTerm)
+	e.GET("/api/graph", handler.GetGlossaryGraph)
 }
 
 // GetAll получает список всех терминов.
@@ -29,7 +30,7 @@ func NewGlossaryHandler(e *echo.Echo, uc *usecase.GlossaryUsecase) {
 // @Produce json
 // @Success 200 {array} domain.GlossaryTerm
 // @Failure 500 {object} string "Ошибка сервера"
-// @Router /terms [get]
+// @Router /api/terms [get]
 func (h *GlossaryHandler) GetAll(c echo.Context) error {
 	terms, err := h.UC.GetAllTerms()
 	if err != nil {
@@ -46,7 +47,7 @@ func (h *GlossaryHandler) GetAll(c echo.Context) error {
 // @Param term path string true "Ключевое слово"
 // @Success 200 {object} domain.GlossaryTerm
 // @Failure 404 {object} string "Термин не найден"
-// @Router /terms/{term} [get]
+// @Router /api/terms/{term} [get]
 func (h *GlossaryHandler) GetTerm(c echo.Context) error {
 	term := c.Param("term")
 	result, err := h.UC.GetTerm(term)
@@ -66,7 +67,7 @@ func (h *GlossaryHandler) GetTerm(c echo.Context) error {
 // @Success 201 {object} domain.GlossaryTerm
 // @Failure 400 {object} string "Неверные данные"
 // @Failure 500 {object} string "Ошибка сервера"
-// @Router /terms [post]
+// @Router /api/terms [post]
 func (h *GlossaryHandler) CreateTerm(c echo.Context) error {
 	var term domain.GlossaryTerm
 	if err := c.Bind(&term); err != nil {
@@ -88,7 +89,7 @@ func (h *GlossaryHandler) CreateTerm(c echo.Context) error {
 // @Success 200 {object} domain.GlossaryTerm
 // @Failure 400 {object} string "Неверные данные"
 // @Failure 500 {object} string "Ошибка сервера"
-// @Router /terms/{term} [put]
+// @Router /api/terms/{term} [put]
 func (h *GlossaryHandler) UpdateTerm(c echo.Context) error {
 	var term domain.GlossaryTerm
 	if err := c.Bind(&term); err != nil {
@@ -108,11 +109,33 @@ func (h *GlossaryHandler) UpdateTerm(c echo.Context) error {
 // @Param term path string true "Ключевое слово"
 // @Success 204 "Термин успешно удален"
 // @Failure 500 {object} string "Ошибка сервера"
-// @Router /terms/{term} [delete]
+// @Router /api/terms/{term} [delete]
 func (h *GlossaryHandler) DeleteTerm(c echo.Context) error {
 	term := c.Param("term")
 	if err := h.UC.DeleteTerm(term); err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
 	return c.NoContent(http.StatusNoContent)
+}
+
+// GetGlossaryGraph получает граф терминов и их связей.
+// @Summary Получение графа терминов
+// @Description Возвращает граф терминов и их связей в формате, удобном для использования в react-flow.
+// @Tags Глоссарий
+// @Produce json
+// @Success 200 {object} map[string]interface{}
+// @Failure 500 {object} string "Ошибка сервера"
+// @Router /api/graph [get]
+func (h *GlossaryHandler) GetGlossaryGraph(c echo.Context) error {
+	nodes, edges, err := h.UC.GetGlossaryGraph()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	graph := map[string]interface{}{
+		"nodes": nodes,
+		"edges": edges,
+	}
+
+	return c.JSON(http.StatusOK, graph)
 }

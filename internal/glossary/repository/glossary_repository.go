@@ -45,7 +45,7 @@ func (r *GlossaryRepository) GetByTerm(term string) (*domain.GlossaryTerm, error
 	var glossaryTerm domain.GlossaryTerm
 	if err := row.Scan(&glossaryTerm.ID, &glossaryTerm.Term, &glossaryTerm.Description); err != nil {
 		if err == sql.ErrNoRows {
-			return nil, nil // return nil if no rows are found
+			return nil, nil
 		}
 		return nil, err
 	}
@@ -91,4 +91,41 @@ func (r *GlossaryRepository) Delete(term string) error {
 		return sql.ErrNoRows
 	}
 	return nil
+}
+
+func (r *GlossaryRepository) GetGlossaryGraph() ([]domain.GlossaryNode, []domain.GlossaryEdge, error) {
+	nodesQuery := "SELECT id, term, description FROM glossary"
+	edgesQuery := "SELECT term_source_id, term_target_id, relation_type FROM glossary_relations"
+
+	rows, err := r.Db.Query(nodesQuery)
+	if err != nil {
+		return nil, nil, err
+	}
+	defer rows.Close()
+
+	var nodes []domain.GlossaryNode
+	for rows.Next() {
+		var node domain.GlossaryNode
+		if err := rows.Scan(&node.ID, &node.Term, &node.Description); err != nil {
+			return nil, nil, err
+		}
+		nodes = append(nodes, node)
+	}
+
+	rows, err = r.Db.Query(edgesQuery)
+	if err != nil {
+		return nil, nil, err
+	}
+	defer rows.Close()
+
+	var edges []domain.GlossaryEdge
+	for rows.Next() {
+		var edge domain.GlossaryEdge
+		if err := rows.Scan(&edge.SourceID, &edge.TargetID, &edge.RelationType); err != nil {
+			return nil, nil, err
+		}
+		edges = append(edges, edge)
+	}
+
+	return nodes, edges, nil
 }

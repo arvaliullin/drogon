@@ -16,9 +16,9 @@ import (
 )
 
 func main() {
-	databaseURL, exists := os.LookupEnv("DATABASE_URL")
+	databaseURL, exists := os.LookupEnv("DATABASE_CONNECTION")
 	if !exists {
-		log.Fatal("DATABASE_URL environment variable not set")
+		log.Fatal("DATABASE_CONNECTION environment variable not set")
 	}
 
 	db, err := sql.Open("postgres", databaseURL)

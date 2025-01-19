@@ -1,4 +1,9 @@
 # Общие сведения
 
-1. [Глоссарий терминов](docs/glossary.md)
-2. [Данные для графа](docs/glossary_graph.md)
+## Генерация документации swagger
+
+[Документация в формате swagger](docs/swagger.yaml).
+
+```shell
+swag init -g cmd/glossary/main.go
+```

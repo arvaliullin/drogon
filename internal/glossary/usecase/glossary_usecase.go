@@ -32,3 +32,7 @@ func (uc *GlossaryUsecase) UpdateTerm(term domain.GlossaryTerm) error {
 func (uc *GlossaryUsecase) DeleteTerm(term string) error {
 	return uc.repo.Delete(term)
 }
+
+func (uc *GlossaryUsecase) GetGlossaryGraph() ([]domain.GlossaryNode, []domain.GlossaryEdge, error) {
+	return uc.repo.GetGlossaryGraph()
+}
