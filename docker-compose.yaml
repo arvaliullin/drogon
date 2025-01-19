@@ -1,8 +1,6 @@
 services:
   drogon:
-    build:
-      context: .
-      dockerfile: deployments/drogon.Dockerfile
+    image: docker.io/arvaliullin/drogon:v0.1
     ports:
       - "8080:8080"
     environment:
