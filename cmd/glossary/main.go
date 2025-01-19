@@ -1,13 +1,34 @@
 package main
 
 import (
-	"net/http"
+	"database/sql"
+	"log"
+	"os"
 
+	_ "github.com/arvaliullin/drogon/docs"
+	"github.com/arvaliullin/drogon/internal/glossary/delivery"
+	"github.com/arvaliullin/drogon/internal/glossary/repository"
+	"github.com/arvaliullin/drogon/internal/glossary/usecase"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	_ "github.com/lib/pq"
+	swagger "github.com/swaggo/echo-swagger"
 )
 
 func main() {
+	databaseURL, exists := os.LookupEnv("DATABASE_URL")
+	if !exists {
+		log.Fatal("DATABASE_URL environment variable not set")
+	}
+
+	db, err := sql.Open("postgres", databaseURL)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+
+	repo := repository.NewGlossaryRepository(db)
+	uc := usecase.NewGlossaryUsecase(repo)
 	e := echo.New()
 
 	e.Use(middleware.Logger())
@@ -19,9 +40,11 @@ func main() {
 
 	e.Static("/", "dist")
 
-	e.GET("/api/hello", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello, World!")
-	})
+	e.GET("/swagger/*", swagger.WrapHandler)
 
-	e.Logger.Fatal(e.Start(":8080"))
+	delivery.NewGlossaryHandler(e, uc)
+
+	if err := e.Start(":8080"); err != nil {
+		log.Fatal(err)
+	}
 }

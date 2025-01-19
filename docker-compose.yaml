@@ -16,3 +16,5 @@ services:
       - POSTGRES_PASSWORD=drogon_password
     ports:
       - "5432:5432"
+    volumes:
+      - ./init/init-db:/docker-entrypoint-initdb.d/
